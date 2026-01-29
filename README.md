@@ -76,6 +76,10 @@ X-Index = CAGR(34%) + 네이버검색(33%) + 블로그(33%)
 
 ---
 
+## 🗂️ DB 스키마
+
+→ [상세 문서](docs/db_schema.md)
+
 ## 📁 폴더 구조
 
 ```
@@ -120,3 +124,4 @@ pandas, numpy, scipy, sklearn, matplotlib, statsmodels
 
 - [하이브리드 모델 상세](docs/hybrid_model.md)
 - [사분면 분석 상세](docs/quadrant_analysis.md)
+- [DB 스키마](docs/db_schema.md)
