@@ -115,7 +115,7 @@ X-Index = CAGR(34%) + 네이버검색(33%) + 블로그(33%)
 
 ```
 Python 3.8+
-pandas, numpy, scipy, sklearn, matplotlib, statsmodels
+pandas, numpy, scipy, sklearn, matplotlib, statsmodels, sql(supabase)
 ```
 
 ---
