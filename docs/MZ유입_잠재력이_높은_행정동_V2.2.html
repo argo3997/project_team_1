@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Hotplace prediction</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #FAF9F6;
+            min-height: 100vh;
+            color: #1a1a1a;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #E8DCC4 0%, #D4C4A8 100%);
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 500px;
+            height: 500px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+        }
+
+        /* Hero Links */
+        .hero-links {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            display: flex;
+            gap: 16px;
+            z-index: 100;
+        }
+
+        .hero-links a {
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #5C4D3C;
+            text-decoration: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .hero-links a:hover {
+            background: #2C2416;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+        
+        .hero-badge {
+            display: inline-block;
+            background: #fff;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #8B7355;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 900;
+            color: #2C2416;
+            margin-bottom: 16px;
+            letter-spacing: -2px;
+            line-height: 1.2;
+        }
+        
+        .hero h1 span {
+            color: #C4956A;
+        }
+        
+        .hero-subtitle {
+            font-size: 18px;
+            color: #5C4D3C;
+            font-weight: 400;
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+        
+        /* Stats Section */
+        .stats-section {
+            background: #fff;
+            margin: -30px 40px 0;
+            border-radius: 24px;
+            padding: 32px 40px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.08);
+            position: relative;
+            z-index: 10;
+            max-width: 1020px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 16px;
+            border-radius: 16px;
+            background: #FAFAFA;
+        }
+        
+        .stat-number {
+            font-size: 36px;
+            font-weight: 900;
+            color: #C4956A;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #888;
+            font-weight: 500;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 60px 0;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .section-tag {
+            display: inline-block;
+            background: #F0EBE3;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #8B7355;
+            margin-bottom: 12px;
+        }
+        
+        .section-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2C2416;
+            letter-spacing: -1px;
+        }
+
+        .chart-container {
+            background: transparent;
+            margin-bottom: 48px;
+            text-align: center;
+            border: none;
+            box-shadow: none;
+            padding: 0;
+        }
+
+        .chart-img-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            box-shadow: none;
+            background: transparent;
+            border-radius: 0;
+            overflow: visible;
+        }
+
+        .chart-img-wrapper img {
+            width: 100%;
+            height: auto;
+            display: block;
+            mix-blend-mode: multiply;
+        }
+
+        .chart-caption {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        /* Two Column Layout */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 48px;
+        }
+        
+        .card {
+            background: #fff;
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.04);
+            border: 1px solid #F0EBE3;
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2C2416;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #E8DCC4 0%, #D4C4A8 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        /* Method Flow */
+        .method-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+        
+        .method-step {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .method-circle {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #FAF9F6 0%, #F0EBE3 100%);
+            border: 2px solid #E8DCC4;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-size: 22px;
+        }
+        
+        .method-label {
+            font-size: 11px;
+            color: #666;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+        
+        .method-arrow {
+            color: #D4C4A8;
+            font-size: 20px;
+        }
+        
+        .formula-box {
+            background: linear-gradient(135deg, #FAF9F6 0%, #F5F0E8 100%);
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 13px;
+            color: #5C4D3C;
+            text-align: center;
+            border: 1px dashed #D4C4A8;
+            font-weight: 500;
+        }
+        
+        .insight-text {
+            margin-top: 16px;
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+            padding: 16px;
+            background: #FFFBF5;
+            border-radius: 12px;
+            border-left: 3px solid #C4956A;
+        }
+        
+        .insight-text strong {
+            color: #2C2416;
+        }
+        
+        /* Quadrant */
+        .quadrant-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .y-axis-label {
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            font-size: 11px;
+            color: #888;
+            font-weight: 500;
+            white-space: nowrap;
+            letter-spacing: 1px;
+        }
+        
+        .quadrant-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .quadrant-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 3px;
+            border-radius: 16px;
+            overflow: hidden;
+            height: 200px;
+        }
+        
+        .quadrant {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .q1 { background: linear-gradient(135deg, #FFE4E1 0%, #FFCCCB 100%); }
+        .q2 { background: linear-gradient(135deg, #FFF8DC 0%, #FFEFD5 100%); }
+        .q3 { background: linear-gradient(135deg, #F5F5F5 0%, #ECECEC 100%); }
+        .q4 { background: linear-gradient(135deg, #E0F4FF 0%, #B8E6FF 100%); }
+        
+        .quadrant-name {
+            font-size: 12px;
+            font-weight: 700;
+            color: #2C2416;
+            margin-bottom: 4px;
+        }
+        
+        .quadrant-desc {
+            font-size: 10px;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        .quadrant-desc strong {
+            color: #2C2416;
+        }
+        
+        .x-axis-label {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 11px;
+            color: #888;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+        
+        /* Top 5 Section */
+        .top-section {
+            background: linear-gradient(135deg, #2C2416 0%, #4A3F2F 100%);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 48px;
+        }
+        
+        .top-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        
+        .top-tag {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #E8DCC4;
+            margin-bottom: 12px;
+        }
+        
+        .top-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -1px;
+        }
+        
+        .top-list {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+        
+        .top-item {
+            background: rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 24px 20px;
+            text-align: center;
+            flex: 1;
+            max-width: 180px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .top-item:hover {
+            transform: translateY(-4px);
+        }
+        
+        .top-item.first {
+            background: linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,200,0,0.1) 100%);
+            border: 1px solid rgba(255,215,0,0.3);
+        }
+        
+        .top-rank {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+        }
+        
+        .top-item.first .top-rank {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #2C2416;
+        }
+        
+        .top-item:nth-child(2) .top-rank {
+            background: linear-gradient(135deg, #C0C0C0 0%, #A0A0A0 100%);
+            color: #2C2416;
+        }
+        
+        .top-item:nth-child(3) .top-rank {
+            background: linear-gradient(135deg, #CD7F32 0%, #B87333 100%);
+            color: #fff;
+        }
+        
+        .top-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+        
+        .top-score {
+            font-size: 13px;
+            color: #C4956A;
+            font-weight: 600;
+        }
+        
+        /* Insights Grid */
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        
+        .insight-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 28px;
+            border: 1px solid #F0EBE3;
+            text-align: center;
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .insight-card:hover {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        }
+        
+        .insight-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #F0EBE3 0%, #E8DCC4 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 26px;
+        }
+        
+        .insight-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #2C2416;
+            margin-bottom: 8px;
+        }
+        
+        .insight-desc {
+            font-size: 12px;
+            color: #888;
+            line-height: 1.6;
+        }
+        
+        /* Footer */
+        .footer {
+            background: #F5F0E8;
+            padding: 32px 40px;
+            text-align: center;
+        }
+        
+        .footer-text {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .footer-text strong {
+            color: #5C4D3C;
+        }
+
+        /* --- 분석 차트 커스텀 디자인 추가 --- */
+        .analysis-chart-card {
+            background: #fff;
+            border-radius: 30px;
+            padding: 50px 40px;
+            margin-bottom: 50px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+            border: 1px solid #F0EBE3;
+        }
+        .chart-header { text-align: center; margin-bottom: 40px; }
+        .chart-main-title { font-size: 22px; font-weight: 700; color: #2C2416; margin-bottom: 8px; }
+        .chart-sub-title { font-size: 14px; color: #888; }
+        .custom-chart-wrapper { position: relative; max-width: 900px; margin: 0 auto; padding: 20px 20px 50px 60px; }
+        .chart-area { position: relative; aspect-ratio: 16 / 9; background: #fff; border: 1px solid #eee; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; overflow: hidden; }
+        .quadrant-bg { position: relative; padding: 20px; }
+        .quadrant-bg span { font-size: 15px; font-weight: 800; display: block; margin-bottom: 4px; }
+        .quadrant-bg p { font-size: 11px; opacity: 0.7; }
+        .q-potential { background-color: rgba(255, 184, 0, 0.03); color: #D4A017; }
+        .q-core { background-color: rgba(255, 77, 141, 0.03); color: #E91E63; text-align: right; }
+        .q-stagnant { background-color: rgba(168, 168, 168, 0.03); color: #777; display: flex; flex-direction: column; justify-content: flex-end; }
+        .q-opportunity { background-color: rgba(58, 134, 255, 0.03); color: #3A86FF; text-align: right; display: flex; flex-direction: column; justify-content: flex-end; }
+        .axis-line { position: absolute; background: #ddd; z-index: 1; }
+        .x-line { width: 100%; height: 1px; top: 50%; left: 0; border-top: 1px dashed #ccc; }
+        .y-line { width: 1px; height: 100%; left: 50%; top: 0; border-left: 1px dashed #ccc; }
+        .dot { position: absolute; width: 10px; height: 10px; border-radius: 50%; z-index: 10; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .dot::after { content: attr(data-name); position: absolute; left: 14px; top: 50%; transform: translateY(-50%); white-space: nowrap; font-size: 11px; font-weight: 500; color: #444; opacity: 0.8; }
+        .dot:hover { transform: scale(1.5); z-index: 100; box-shadow: 0 0 15px rgba(0,0,0,0.2); }
+        .dot:hover::after { opacity: 1; font-weight: 700; color: #000; font-size: 13px; }
+        .dot.core { background: #FF4D8D; box-shadow: 0 0 8px rgba(255, 77, 141, 0.4); }
+        .dot.potential { background: #FFB800; box-shadow: 0 0 8px rgba(255, 184, 0, 0.4); }
+        .dot.opportunity { background: #3A86FF; box-shadow: 0 0 8px rgba(58, 134, 255, 0.4); }
+        .dot.stagnant { background: #A8A8A8; box-shadow: 0 0 8px rgba(168, 168, 168, 0.4); }
+        .x-axis-title { position: absolute; bottom: 10px; right: 350px; font-size: 15px; font-weight: 600; color: #888; }
+        .y-axis-title { position: absolute; top: 50%; left: -100px; transform: rotate(-90deg) translateY(-50%); font-size: 15px; font-weight: 600; color: #888; width: 250px; text-align: center; }
+
+        /* 강조 점 스타일 - 1위 (금색) */
+        .dot.highlight-1st {
+            width: 18px;
+            height: 18px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%) !important;
+            border: 3px solid #fff;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.4);
+            animation: pulse-gold 2s ease-in-out infinite;
+            z-index: 50;
+        }
+
+        .dot.highlight-1st::before {
+            content: '🥇 1위 용강동';
+            position: absolute;
+            left: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #2C2416;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 800;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.5);
+        }
+
+        .dot.highlight-1st::after {
+            display: none;
+        }
+
+        @keyframes pulse-gold {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.4); }
+            50% { transform: scale(1.2); box-shadow: 0 0 30px rgba(255, 215, 0, 1), 0 0 60px rgba(255, 215, 0, 0.6); }
+        }
+
+        /* 강조 점 스타일 - 2위 (은색) */
+        .dot.highlight-2nd {
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, #C0C0C0 0%, #E8E8E8 100%) !important;
+            border: 3px solid #fff;
+            box-shadow: 0 0 15px rgba(192, 192, 192, 0.8), 0 0 30px rgba(192, 192, 192, 0.4);
+            animation: pulse-silver 2s ease-in-out infinite;
+            z-index: 49;
+        }
+
+        .dot.highlight-2nd::before {
+            content: '🥈 2위 문정 2동';
+            position: absolute;
+            left: 22px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #C0C0C0 0%, #E8E8E8 100%);
+            color: #2C2416;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 800;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(192, 192, 192, 0.5);
+        }
+
+        .dot.highlight-2nd::after {
+            display: none;
+        }
+
+        @keyframes pulse-silver {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(192, 192, 192, 0.8), 0 0 30px rgba(192, 192, 192, 0.4); }
+            50% { transform: scale(1.15); box-shadow: 0 0 25px rgba(192, 192, 192, 1), 0 0 50px rgba(192, 192, 192, 0.6); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <!-- 링크 버튼 -->
+        <div class="hero-links">
+            <a href="https://github.com/argo3997/project_team_1" target="_blank">🔗 GitHub</a>
+            <a href="https://argo3997.github.io/project_team_1/seoul_strategic_map.html" target="_blank">📊 Dashboard</a>
+            <a href="https://docs.google.com/presentation/d/1n3_cnkU5HNtD1lpgbQMAWVhJgJ0mcULk/edit?slide=id.p1#slide=id.p1" target="_blank">📑 PPT</a>
+        </div>
+
+        <div class="hero-badge">📊 데이터 분석 프로젝트</div>
+        <h1>Post <span>핫플레이스</span> 예측</h1>
+        <p class="hero-subtitle">현재 활성도 & 성장 잠재력 기반<br>서울 차세대 핫플 예측</p>
+    </section>
+    
+    <!-- Stats Section -->
+    <div class="stats-section">
+        <div class="stat-item">
+            <div class="stat-number">11,443</div>
+            <div class="stat-label">관측치 (행정동 × 분기)</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">427</div>
+            <div class="stat-label">전체 서울 행정동</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">23</div>
+            <div class="stat-label">분석 대상 행정동</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">6년</div>
+            <div class="stat-label">분석 기간 (2019~2025)</div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="container">
+        <div class="main-content">
+            <!-- Section Header -->
+            <div class="section-header">
+                <div class="section-tag">🔥 핵심 질문</div>
+                <h2 class="section-title">MZ 유입 잠재력이 가장 큰 행정동은 어디일까?</h2>
+            </div>
+
+            <!-- 전략적 분석 차트 섹션 -->
+            <div class="analysis-chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-main-title">성장 잠재력(X)과 현재 활성도(Y)</h3>
+                    <p class="chart-sub-title">데이터를 기반으로 한 행정동별 사분면 분석</p>
+                </div>
+
+                <div class="custom-chart-wrapper">
+                    <!-- Y축 라벨 -->
+                    <div class="y-axis-title">하이이브리드 점수 순위 (Y_Rank)</div>
+                    
+                    <div class="chart-area">
+                        <!-- 사분면 배경 -->
+                        <div class="quadrant-bg q-potential"><span>Potential (잠재)</span><p>활성 높음 / 성장 낮음</p></div>
+                        <div class="quadrant-bg q-core"><span>Core (핵심)</span><p>이미 핫플</p></div>
+                        <div class="quadrant-bg q-stagnant"><span>Stagnant (정체)</span><p>관찰 필요</p></div>
+                        <div class="quadrant-bg q-opportunity"><span>Opportunity (기회)</span><p>🎯 선점 구역</p></div>
+                        
+                        <!-- 중심 구분선 -->
+                        <div class="axis-line x-line"></div>
+                        <div class="axis-line y-line"></div>
+
+                        <!-- 데이터 포인트 (점들) -->
+                        <div class="dot core" style="bottom: 92%; left: 58%;" data-name="가산동"></div>
+                        <div class="dot core" style="bottom: 85%; left: 78%;" data-name="서교동"></div>
+                        <div class="dot core" style="bottom: 82%; left: 62%;" data-name="여의동"></div>
+                        <div class="dot core" style="bottom: 74%; left: 60%;" data-name="압구정"></div>
+                        <div class="dot core" style="bottom: 70%; left: 55%;" data-name="상암동"></div>
+                        <div class="dot core" style="bottom: 67%; left: 58%;" data-name="삼성1동"></div>
+                        <div class="dot core" style="bottom: 63%; left: 92%;" data-name="성수동"></div>
+                        <div class="dot core" style="bottom: 52%; left: 76%;" data-name="대치4동"></div>
+                        <div class="dot core" style="bottom: 55%; left: 70%;" data-name="서초2동"></div>
+
+                        <div class="dot potential" style="bottom: 67%; left: 43%;" data-name="구로3동"></div>
+                        <div class="dot potential" style="bottom: 63%; left: 34%;" data-name="효창동"></div>
+                        <div class="dot potential" style="bottom: 60%; left: 20%;" data-name="삼성2동"></div>
+
+                        <div class="dot opportunity" style="bottom: 40%; left: 50%;" data-name="청담동"></div>
+                        <!-- 문정2동 - 2위 강조 -->
+                        <div class="dot opportunity highlight-2nd" style="bottom: 36%; left: 55%;" data-name="문정2동"></div>
+                        <!-- 용강동 - 1위 강조 -->
+                        <div class="dot opportunity highlight-1st" style="bottom: 25%; left: 58%;" data-name="용강동"></div>
+                        <div class="dot opportunity" style="bottom: 19%; left: 56%;" data-name="서초3동"></div>
+
+                        <div class="dot stagnant" style="bottom: 47%; left: 34%;" data-name="논현2동"></div>
+                        <div class="dot stagnant" style="bottom: 30%; left: 48%;" data-name="신당동"></div>
+                        <div class="dot stagnant" style="bottom: 20%; left: 45%;" data-name="염리동"></div>
+                        <div class="dot stagnant" style="bottom: 14%; left: 47%;" data-name="양평2동"></div>
+                        <div class="dot stagnant" style="bottom: 10%; left: 48%;" data-name="송파2동"></div>
+                        <div class="dot stagnant" style="bottom: 4%; left: 45%;" data-name="방배1동"></div>
+                        <div class="dot stagnant" style="bottom: 20%; left: 10%;" data-name="중림동"></div>
+                    </div>
+
+                    <!-- X축 라벨 -->
+                    <div class="x-axis-title">x_rank (검색량 지수) →</div>
+                </div>
+                <div class="chart-caption">▲ 전략적 분석: 행정동별 성장 잠재력(X) vs 현재 활성도(Y)</div>
+            </div>
+            
+            <!-- Two Column -->
+            <div class="two-col">
+                <!-- Method Card -->
+                <div class="card">
+                    <div class="card-title">
+                        <div class="card-icon">🔬</div>
+                        하이브리드 모델
+                    </div>
+                    <div class="method-flow">
+                        <div class="method-step">
+                            <div class="method-circle">📊</div>
+                            <div class="method-label">서울 전체<br>회귀분석</div>
+                        </div>
+                        <span class="method-arrow">→</span>
+                        <div class="method-step">
+                            <div class="method-circle">🎯</div>
+                            <div class="method-label">핫플 특성<br>모델링</div>
+                        </div>
+                        <span class="method-arrow">→</span>
+                        <div class="method-step">
+                            <div class="method-circle">⚡</div>
+                            <div class="method-label">점수<br>산출</div>
+                        </div>
+                    </div>
+                    <div class="formula-box">
+                        하이브리드 점수 = Model2 × 0.7 + 핫플_유사도 × 0.3
+                    </div>
+                    <div class="insight-text">
+                        <strong>💡 검색 트렌드와</strong> <strong> 상권 특성 데이터</strong> 를 결합하면 <br>
+                        MZ유입 잠재력이 큰 행정동을 조기 발굴할 수 있다.
+                    </div>
+                </div>
+                
+                <!-- Quadrant Card -->
+                <div class="card">
+                    <div class="card-title">
+                        <div class="card-icon">📈</div>
+                        사분면 분석: 투자 전략 매트릭스
+                    </div>
+                    <div class="quadrant-wrapper">
+                        <div class="y-axis-label">↑ 하이브리드 점수</div>
+                        <div class="quadrant-main">
+                            <div class="quadrant-grid">
+                                <div class="quadrant q2">
+                                    <div class="quadrant-name">🟡 2사분면: 잠재</div>
+                                    <div class="quadrant-desc">현재 상권↑ 잠재력↓<br>관찰 필요</div>
+                                </div>
+                                <div class="quadrant q1">
+                                    <div class="quadrant-name">🔴 1사분면: 핵심</div>
+                                    <div class="quadrant-desc">현재 상권↑ 잠재력↑<br><strong>이미 핫플</strong></div>
+                                </div>
+                                <div class="quadrant q3">
+                                    <div class="quadrant-name">⚪ 3사분면: 정체</div>
+                                    <div class="quadrant-desc">현재 상권↓ 잠재력↓<br>성장 필요</div>
+                                </div>
+                                <div class="quadrant q4">
+                                    <div class="quadrant-name">🔵 4사분면: 효율</div>
+                                    <div class="quadrant-desc">현재 상권↓ 잠재력↑<br><strong>🎯 선점 기회!</strong></div>
+                                </div>
+                            </div>
+                            <div class="x-axis-label">X-Index (성장 잠재력) →</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Top 5 Section -->
+            <div class="top-section">
+                <div class="top-header">
+                    <div class="top-tag">🏆 분석 결과</div>
+                    <h3 class="top-title">Post 핫플레이스 TOP 5</h3>
+                </div>
+                <div class="top-list">
+                    <div class="top-item first">
+                        <div class="top-rank">1</div>
+                        <div class="top-name">용강동</div>
+                        <div class="top-score">0.519</div>
+                    </div>
+                    <div class="top-item">
+                        <div class="top-rank">2</div>
+                        <div class="top-name">문정2동</div>
+                        <div class="top-score">0.418</div>
+                    </div>
+                    <div class="top-item">
+                        <div class="top-rank">3</div>
+                        <div class="top-name">효창동</div>
+                        <div class="top-score">0.407</div>
+                    </div>
+                    <div class="top-item">
+                        <div class="top-rank">4</div>
+                        <div class="top-name">사당동</div>
+                        <div class="top-score">0.327</div>
+                    </div>
+                    <div class="top-item">
+                        <div class="top-rank">5</div>
+                        <div class="top-name">염리동</div>
+                        <div class="top-score">0.280</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Insights -->
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <div class="insight-icon">💡</div>
+                    <div class="insight-title">주목 지역: 용강동</div>
+                    <div class="insight-desc">하이브리드 점수 1위 + 높은 성장 잠재력<br>잠재력이 가장 큰 지역</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon">🎯</div>
+                    <div class="insight-title">선점 기회: 4사분면</div>
+                    <div class="insight-desc">문정2동, 용강동, 청담동, 서초3동<br>높은 성장 잠재력으로 주목</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon">📊</div>
+                    <div class="insight-title">통계적 검증</div>
+                    <div class="insight-desc">X-Index와 Y-Index는 독립적<br>두 축이 서로 다른 정보 제공하므로 사분면 분석 유효</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <p class="footer-text">
+            <strong>Data Source:</strong> 서울 열린데이터광장 · 서울시 상권분석서비스 · NAVER DATALAB · PANDARANK · YOUTUBE
+        </p>
+    </footer>
+</body>
+</html>
