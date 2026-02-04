@@ -39,6 +39,34 @@
             background: rgba(255,255,255,0.3);
             border-radius: 50%;
         }
+
+        /* Hero Links */
+        .hero-links {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            display: flex;
+            gap: 16px;
+            z-index: 100;
+        }
+
+        .hero-links a {
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #5C4D3C;
+            text-decoration: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .hero-links a:hover {
+            background: #2C2416;
+            color: #fff;
+            transform: translateY(-2px);
+        }
         
         .hero-badge {
             display: inline-block;
@@ -146,11 +174,10 @@
             letter-spacing: -1px;
         }
 
-                .chart-container {
-            background: transparent; /* 배경색 제거 */
+        .chart-container {
+            background: transparent;
             margin-bottom: 48px;
             text-align: center;
-            /* 기존 border, box-shadow, padding 모두 삭제 또는 초기화 */
             border: none;
             box-shadow: none;
             padding: 0;
@@ -159,20 +186,18 @@
         .chart-img-wrapper {
             position: relative;
             width: 100%;
-            max-width: 1000px; /* 이미지 크기에 맞춰 너비 조정 */
+            max-width: 1000px;
             margin: 0 auto;
-            /* 기존 shadow, background, border-radius 삭제 */
             box-shadow: none;
             background: transparent;
             border-radius: 0;
-            overflow: visible; /* 그림자가 잘리지 않게 설정 */
+            overflow: visible;
         }
 
         .chart-img-wrapper img {
             width: 100%;
             height: auto;
             display: block;
-            /* 이미지의 흰 배경과 웹사이트 배경(#FAF9F6)을 자연스럽게 합치고 싶다면 아래 속성 추가 */
             mix-blend-mode: multiply;
         }
 
@@ -181,7 +206,7 @@
             margin-top: 15px;
             font-size: 13px;
             color: #666;
-            font-weight: 5000;
+            font-weight: 500;
         }
         
         /* Two Column Layout */
@@ -555,7 +580,14 @@
 <body>
     <!-- Hero Section -->
     <section class="hero">
-        <div class="hero-badge">📊 데이터 분석 프로젝트 </div>
+        <!-- 링크 버튼 -->
+        <div class="hero-links">
+            <a href="https://github.com/argo3997/project_team_1" target="_blank">🔗 GitHub</a>
+            <a href="https://argo3997.github.io/project_team_1/seoul_strategic_map.html" target="_blank">📊 Dashboard</a>
+            <a href="https://docs.google.com/presentation/d/1n3_cnkU5HNtD1lpgbQMAWVhJgJ0mcULk/edit?usp=sharing&ouid=106126185939022140352&rtpof=true&sd=true" target="_blank">📑 PPT</a>
+        </div>
+
+        <div class="hero-badge">📊 데이터 분석 프로젝트</div>
         <h1>Post <span>핫플레이스</span> 예측</h1>
         <p class="hero-subtitle">현재 활성도 & 성장 잠재력 기반<br>서울 차세대 핫플 예측</p>
     </section>
@@ -589,11 +621,11 @@
                 <h2 class="section-title">MZ 유입 잠재력이 가장 큰 행정동은 어디일까?</h2>
             </div>
 
-<!-- 전략적 분석 차트 섹션 (교체 부분) -->
+            <!-- 전략적 분석 차트 섹션 -->
             <div class="analysis-chart-card">
                 <div class="chart-header">
-                    <h3 class="chart-main-title">성장 잠재력(X)과 현재 활성도(Y) </h3>
-                    <p class="chart-sub-title">데이터를 기반으로 한 행정동별 사분면 분석 </p>
+                    <h3 class="chart-main-title">성장 잠재력(X)과 현재 활성도(Y)</h3>
+                    <p class="chart-sub-title">데이터를 기반으로 한 행정동별 사분면 분석</p>
                 </div>
 
                 <div class="custom-chart-wrapper">
@@ -612,33 +644,32 @@
                         <div class="axis-line y-line"></div>
 
                         <!-- 데이터 포인트 (점들) -->
-                            <div class="dot core" style="bottom: 92%; left: 58%;" data-name="가산동"></div>
-                            <div class="dot core" style="bottom: 85%; left: 78%;" data-name="서교동"></div>
-                            <div class="dot core" style="bottom: 82%; left: 62%;" data-name="여의동"></div>
-                            <div class="dot core" style="bottom: 74%; left: 60%;" data-name="압구정"></div>
-                            <div class="dot core" style="bottom: 70%; left: 55%;" data-name="상암동"></div>
-                            <div class="dot core" style="bottom: 67%; left: 58%;" data-name="삼성1동"></div>
-                            <div class="dot core" style="bottom: 63%; left: 92%;" data-name="성수동"></div>
-                            <div class="dot core" style="bottom: 52%; left: 76%;" data-name="대치4동"></div>
-                            <div class="dot core" style="bottom: 55%; left: 70%;" data-name="서초2동"></div>
+                        <div class="dot core" style="bottom: 92%; left: 58%;" data-name="가산동"></div>
+                        <div class="dot core" style="bottom: 85%; left: 78%;" data-name="서교동"></div>
+                        <div class="dot core" style="bottom: 82%; left: 62%;" data-name="여의동"></div>
+                        <div class="dot core" style="bottom: 74%; left: 60%;" data-name="압구정"></div>
+                        <div class="dot core" style="bottom: 70%; left: 55%;" data-name="상암동"></div>
+                        <div class="dot core" style="bottom: 67%; left: 58%;" data-name="삼성1동"></div>
+                        <div class="dot core" style="bottom: 63%; left: 92%;" data-name="성수동"></div>
+                        <div class="dot core" style="bottom: 52%; left: 76%;" data-name="대치4동"></div>
+                        <div class="dot core" style="bottom: 55%; left: 70%;" data-name="서초2동"></div>
 
-                            <div class="dot potential" style="bottom: 67%; left: 43%;" data-name="구로3동"></div>
-                            <div class="dot potential" style="bottom: 63%; left: 34%;" data-name="효창동"></div>
-                            <div class="dot potential" style="bottom: 60%; left: 20%;" data-name="삼성2동"></div>
+                        <div class="dot potential" style="bottom: 67%; left: 43%;" data-name="구로3동"></div>
+                        <div class="dot potential" style="bottom: 63%; left: 34%;" data-name="효창동"></div>
+                        <div class="dot potential" style="bottom: 60%; left: 20%;" data-name="삼성2동"></div>
 
-                            <div class="dot opportunity" style="bottom: 40%; left: 50%;" data-name="청담동"></div>
-                            <div class="dot opportunity" style="bottom: 36%; left: 55%;" data-name="문정2동"></div>
-                            <div class="dot opportunity" style="bottom: 25%; left: 58%;" data-name="용강동"></div>
-                            <div class="dot opportunity" style="bottom: 19%; left: 56%;" data-name="서초3동"></div>
+                        <div class="dot opportunity" style="bottom: 40%; left: 50%;" data-name="청담동"></div>
+                        <div class="dot opportunity" style="bottom: 36%; left: 55%;" data-name="문정2동"></div>
+                        <div class="dot opportunity" style="bottom: 25%; left: 58%;" data-name="용강동"></div>
+                        <div class="dot opportunity" style="bottom: 19%; left: 56%;" data-name="서초3동"></div>
 
-                            <div class="dot stagnant" style="bottom: 47%; left: 34%;" data-name="논현2동"></div>
-                            <div class="dot stagnant" style="bottom: 30%; left: 48%;" data-name="신당동"></div>
-                            <div class="dot stagnant" style="bottom: 20%; left: 45%;" data-name="염리동"></div>
-                            <div class="dot stagnant" style="bottom: 14%; left: 47%;" data-name="양평2동"></div>
-                            <div class="dot stagnant" style="bottom: 10%; left: 48%;" data-name="송파2동"></div>
-                            <div class="dot stagnant" style="bottom: 4%; left: 45%;" data-name="방배1동"></div>
-                            <div class="dot stagnant" style="bottom: 20%; left: 10%;" data-name="중림동"></div>
-
+                        <div class="dot stagnant" style="bottom: 47%; left: 34%;" data-name="논현2동"></div>
+                        <div class="dot stagnant" style="bottom: 30%; left: 48%;" data-name="신당동"></div>
+                        <div class="dot stagnant" style="bottom: 20%; left: 45%;" data-name="염리동"></div>
+                        <div class="dot stagnant" style="bottom: 14%; left: 47%;" data-name="양평2동"></div>
+                        <div class="dot stagnant" style="bottom: 10%; left: 48%;" data-name="송파2동"></div>
+                        <div class="dot stagnant" style="bottom: 4%; left: 45%;" data-name="방배1동"></div>
+                        <div class="dot stagnant" style="bottom: 20%; left: 10%;" data-name="중림동"></div>
                     </div>
 
                     <!-- X축 라벨 -->
@@ -687,7 +718,7 @@
                         사분면 분석: 투자 전략 매트릭스
                     </div>
                     <div class="quadrant-wrapper">
-                        <div class="y-axis-label">↑ 하이브리드 점수 </div>
+                        <div class="y-axis-label">↑ 하이브리드 점수</div>
                         <div class="quadrant-main">
                             <div class="quadrant-grid">
                                 <div class="quadrant q2">
